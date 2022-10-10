@@ -31,7 +31,7 @@ public class AlertRabbit {
             scheduler.start();
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(AlertRabbit.getInterval())
+                    .withIntervalInSeconds(Integer.parseInt(AlertRabbit.genProperties().getProperty("rabbit.interval")))
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
@@ -40,8 +40,6 @@ public class AlertRabbit {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException se) {
             se.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -65,11 +63,14 @@ public class AlertRabbit {
      * получаем значения свойств из объекта Properties
      * получаем числовое значение
      */
-    public static int getInterval() throws IOException {
-        File file = new File("rabbit.properties");
-        Properties properties = new Properties();
-        properties.load(new FileReader(file));
-        String interval = properties.getProperty("rabbit.interval");
-        return Integer.parseInt(interval);
+
+    public static Properties genProperties() {
+        Properties config = new Properties();
+        try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
+            config.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return config;
     }
 }
