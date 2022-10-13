@@ -23,7 +23,7 @@ public class HabrCareerParse {
 
     public static void main(String[] args) throws IOException {
         /*
-        Добавляем итерирование по страницам
+        Добавляем итерирование по страницам.
          */
         int page = 1;
         while (page <= 5) {
