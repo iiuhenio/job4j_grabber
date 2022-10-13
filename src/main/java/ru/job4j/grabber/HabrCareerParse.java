@@ -5,8 +5,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class HabrCareerParse {
 
@@ -17,39 +19,56 @@ public class HabrCareerParse {
      */
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    private static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
+    private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
     public static void main(String[] args) throws IOException {
         /*
-         * 2. Сначала мы получаем страницу, чтобы с ней можно было работать:
+        Добавляем итерирование по страницам
          */
-        Connection connection = Jsoup.connect(PAGE_LINK);
-        Document document = connection.get();
-        /*
-         * 4. На основе анализа прописываем парсинг
-         * 1) Сначала мы получаем все вакансии страницы.
-         */
-        Elements rows = document.select(".vacancy-card__inner");
-        /*
-         * 2) Проходимся по каждой вакансии и извлекаем нужные для нас данные.
-         * Сначала получаем элементы содержащие название и ссылку. Стоит обратить внимание,
-         * что дочерние элементы можно получать через индекс - метод child(0)
-         * или же через селектор - select(".vacancy-card__title").
-         */
-        rows.forEach(row -> {
-            Element titleElement = row.select(".vacancy-card__title").first();
-            Element linkElement = titleElement.child(0);
-            Element dateElement = row.select(".vacancy-card__date").first();
+        int page = 1;
+        while (page <= 5) {
+            Connection connection = Jsoup.connect(PAGE_LINK + page);
             /*
-             * 3) Наконец получаем данные непосредственно.
-             * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
-             * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
-             * как значение атрибута. Для этого служит метод attr()
+             * 2. Сначала мы получаем страницу, чтобы с ней можно было работать:
              */
-            String vacancyName = titleElement.text();
-            String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-            String date = dateElement.text();
-            System.out.printf("%s %s %s%n", date, vacancyName, link);
-        });
+            Document document = connection.get();
+            /*
+             * 4. На основе анализа прописываем парсинг
+             * 1) Сначала мы получаем все вакансии страницы.
+             */
+            Elements rows = document.select(".vacancy-card__inner");
+            /*
+             * 2) Проходимся по каждой вакансии и извлекаем нужные для нас данные.
+             * Сначала получаем элементы содержащие название и ссылку. Стоит обратить внимание,
+             * что дочерние элементы можно получать через индекс - метод child(0)
+             * или же через селектор - select(".vacancy-card__title").
+             */
+            rows.forEach(row -> {
+                Element titleElement = row.select(".vacancy-card__title").first();
+                Element linkElement = titleElement.child(0);
+                Element dateElement = row.select(".vacancy-card__date").first();
+                /*
+                 * Меняем формат даты:
+                 */
+                HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
+                LocalDateTime datet = hcdtp.parse(
+                        row.select(".vacancy-card__date")
+                                .first()
+                                .child(0)
+                                .attr("datetime"));
+
+                /*
+                 * 3) Наконец получаем данные непосредственно.
+                 * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
+                 * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
+                 * как значение атрибута. Для этого служит метод attr()
+                 */
+                String vacancyName = titleElement.text();
+                String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                String date = dateElement.text();
+                System.out.printf("%s %s %s%n", datet, vacancyName, link);
+            });
+            page++;
+        }
     }
 }
