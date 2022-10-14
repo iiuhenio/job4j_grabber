@@ -21,6 +21,19 @@ public class HabrCareerParse {
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
+    /*
+    Реализуем вывод описания вакансии
+     */
+    private String retrieveDescription(String link) {
+        Connection connection = Jsoup.connect(link);
+        try {
+            Document document = connection.get();
+            Elements rows = document.select(".style-ugc");
+            return rows.text();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void main(String[] args) throws IOException {
         /*
         Добавляем итерирование по страницам.
@@ -47,28 +60,30 @@ public class HabrCareerParse {
                 Element titleElement = row.select(".vacancy-card__title").first();
                 Element linkElement = titleElement.child(0);
                 Element dateElement = row.select(".vacancy-card__date").first();
-                /*
-                 * Меняем формат даты:
-                 */
-                HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
-                LocalDateTime datet = hcdtp.parse(
-                        row.select(".vacancy-card__date")
-                                .first()
-                                .child(0)
-                                .attr("datetime"));
+                    /*
+                     * Меняем формат даты:
+                     */
+                    HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
+                    LocalDateTime datet = hcdtp.parse(
+                            row.select(".vacancy-card__date")
+                                    .first()
+                                    .child(0)
+                                    .attr("datetime"));
+                    /*
+                     * 3) Наконец получаем данные непосредственно.
+                     * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
+                     * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
+                     * как значение атрибута. Для этого служит метод attr()
+                     */
+                    String vacancyName = titleElement.text();
+                    String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                    String date = dateElement.text();
 
-                /*
-                 * 3) Наконец получаем данные непосредственно.
-                 * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
-                 * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
-                 * как значение атрибута. Для этого служит метод attr()
-                 */
-                String vacancyName = titleElement.text();
-                String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-                String date = dateElement.text();
-                System.out.printf("%s %s %s%n", datet, vacancyName, link);
+                    System.out.printf("%s %s %s%n", datet, vacancyName, link);
             });
             page++;
         }
+        HabrCareerParse parse = new HabrCareerParse();
+        System.out.println(parse.retrieveDescription("https://career.habr.com/vacancies/1000108877"));
     }
 }
