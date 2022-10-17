@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class HabrCareerParse {
-
     /**
      * 1. У нас есть две константы.
      * Первая это ссылка на сайт в целом.
@@ -38,8 +37,7 @@ public class HabrCareerParse {
         /*
         Добавляем итерирование по страницам.
          */
-        int page = 1;
-        while (page <= 5) {
+        for (int page = 1; page <= 5; page++) {
             Connection connection = Jsoup.connect(PAGE_LINK + page);
             /*
              * 2. Сначала мы получаем страницу, чтобы с ней можно было работать:
@@ -60,28 +58,27 @@ public class HabrCareerParse {
                 Element titleElement = row.select(".vacancy-card__title").first();
                 Element linkElement = titleElement.child(0);
                 Element dateElement = row.select(".vacancy-card__date").first();
-                    /*
-                     * Меняем формат даты:
-                     */
-                    HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
-                    LocalDateTime datet = hcdtp.parse(
-                            row.select(".vacancy-card__date")
-                                    .first()
-                                    .child(0)
-                                    .attr("datetime"));
-                    /*
-                     * 3) Наконец получаем данные непосредственно.
-                     * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
-                     * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
-                     * как значение атрибута. Для этого служит метод attr()
-                     */
-                    String vacancyName = titleElement.text();
-                    String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-                    String date = dateElement.text();
+                /*
+                 * Меняем формат даты:
+                 */
+                HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
+                LocalDateTime datet = hcdtp.parse(
+                        row.select(".vacancy-card__date")
+                                .first()
+                                .child(0)
+                                .attr("datetime"));
+                /*
+                 * 3) Наконец получаем данные непосредственно.
+                 * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
+                 * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
+                 * как значение атрибута. Для этого служит метод attr()
+                 */
+                String vacancyName = titleElement.text();
+                String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                String date = dateElement.text();
 
-                    System.out.printf("%s %s %s%n", datet, vacancyName, link);
+                System.out.printf("%s %s %s%n", datet, vacancyName, link);
             });
-            page++;
         }
         HabrCareerParse parse = new HabrCareerParse();
         System.out.println(parse.retrieveDescription("https://career.habr.com/vacancies/1000108877"));
