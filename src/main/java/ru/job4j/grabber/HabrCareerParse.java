@@ -5,12 +5,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class HabrCareerParse {
+public class HabrCareerParse implements Parse {
     /**
      * 1. У нас есть две константы.
      * Первая это ссылка на сайт в целом.
@@ -20,6 +23,14 @@ public class HabrCareerParse {
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
+    /*
+    Парсер даты сделаем полем и принимать в конструкторе
+     */
+    private final DateTimeParser dateTimeParser;
+
+    public HabrCareerParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
     /*
     Реализуем вывод описания вакансии
      */
@@ -33,7 +44,9 @@ public class HabrCareerParse {
             throw new RuntimeException(e);
         }
     }
-    public static void main(String[] args) throws IOException {
+    @Override
+    public List<Post> list(String link) {
+        List<Post> list = new ArrayList<>();
         /*
         Добавляем итерирование по страницам.
          */
@@ -42,7 +55,12 @@ public class HabrCareerParse {
             /*
              * 2. Сначала мы получаем страницу, чтобы с ней можно было работать:
              */
-            Document document = connection.get();
+            Document document = null;
+            try {
+                document = connection.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             /*
              * 4. На основе анализа прописываем парсинг
              * 1) Сначала мы получаем все вакансии страницы.
@@ -62,7 +80,7 @@ public class HabrCareerParse {
                  * Меняем формат даты:
                  */
                 HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
-                LocalDateTime datet = hcdtp.parse(
+                LocalDateTime datetT = hcdtp.parse(
                         row.select(".vacancy-card__date")
                                 .first()
                                 .child(0)
@@ -74,13 +92,14 @@ public class HabrCareerParse {
                  * как значение атрибута. Для этого служит метод attr()
                  */
                 String vacancyName = titleElement.text();
-                String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                String linkVacancy = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
                 String date = dateElement.text();
-
-                System.out.printf("%s %s %s%n", datet, vacancyName, link);
+                String description;
+                description = retrieveDescription(linkVacancy);
+                Post post = new Post(vacancyName, linkVacancy, description, datetT);
+                list.add(post);
             });
         }
-        HabrCareerParse parse = new HabrCareerParse();
-        System.out.println(parse.retrieveDescription("https://career.habr.com/vacancies/1000108877"));
+        return list;
     }
 }
