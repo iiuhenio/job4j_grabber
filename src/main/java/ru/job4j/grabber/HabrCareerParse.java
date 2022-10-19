@@ -23,6 +23,7 @@ public class HabrCareerParse implements Parse {
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
+    private static final int PAGE_NUMBER = 5;
     /*
     Парсер даты сделаем полем и принимать в конструкторе
      */
@@ -50,8 +51,8 @@ public class HabrCareerParse implements Parse {
         /*
         Добавляем итерирование по страницам.
          */
-        for (int page = 1; page <= 5; page++) {
-            Connection connection = Jsoup.connect(PAGE_LINK + page);
+        for (int i = 1; i <= PAGE_NUMBER; i++) {
+            Connection connection = Jsoup.connect(link + i);
             /*
              * 2. Сначала мы получаем страницу, чтобы с ней можно было работать:
              */
@@ -66,40 +67,28 @@ public class HabrCareerParse implements Parse {
              * 1) Сначала мы получаем все вакансии страницы.
              */
             Elements rows = document.select(".vacancy-card__inner");
-            /*
-             * 2) Проходимся по каждой вакансии и извлекаем нужные для нас данные.
-             * Сначала получаем элементы содержащие название и ссылку. Стоит обратить внимание,
-             * что дочерние элементы можно получать через индекс - метод child(0)
-             * или же через селектор - select(".vacancy-card__title").
-             */
-            rows.forEach(row -> {
-                Element titleElement = row.select(".vacancy-card__title").first();
-                Element linkElement = titleElement.child(0);
-                Element dateElement = row.select(".vacancy-card__date").first();
-                /*
-                 * Меняем формат даты:
-                 */
-                HabrCareerDateTimeParser hcdtp = new HabrCareerDateTimeParser();
-                LocalDateTime datetT = hcdtp.parse(
-                        row.select(".vacancy-card__date")
-                                .first()
-                                .child(0)
-                                .attr("datetime"));
-                /*
-                 * 3) Наконец получаем данные непосредственно.
-                 * text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится
-                 * вне тегов HTML. Ссылка находится в виде атрибута, поэтому ее значение надо получить
-                 * как значение атрибута. Для этого служит метод attr()
-                 */
-                String vacancyName = titleElement.text();
-                String linkVacancy = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-                String date = dateElement.text();
-                String description;
-                description = retrieveDescription(linkVacancy);
-                Post post = new Post(vacancyName, linkVacancy, description, datetT);
-                list.add(post);
-            });
+
+            rows.forEach(row -> list.add(getPost(row)));
         }
         return list;
+    }
+
+    /**
+     * Вынесем парсинг Post в отдельный метод
+     *
+     *  Проходимся по каждой вакансии и извлекаем нужные для нас данные.
+     * Сначала получаем элементы содержащие название и ссылку. Стоит обратить внимание,
+     * что дочерние элементы можно получать через индекс - метод child(0)
+     * или же через селектор - select(".vacancy-card__title").
+     */
+    private Post getPost(Element element) {
+        Element titleElement = element.select(".vacancy-card__title").first();
+        Element linkElement = titleElement.child(0);
+        Element dateElement = element.select(".vacancy-card__date").first();
+        String vacancyName = titleElement.text();
+        String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+        String description = retrieveDescription(link);
+        LocalDateTime dateTime = dateTimeParser.parse(dateElement.child(0).attr("dateTime"));
+        return new Post(vacancyName, link, description, dateTime);
     }
 }
