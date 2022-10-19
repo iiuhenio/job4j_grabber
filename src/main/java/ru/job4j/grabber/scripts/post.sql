@@ -3,6 +3,6 @@ create table post (
 	name TEXT,
 	text VARCHAR(8000),
 	link TEXT,
-	created TEXT,
+	created TIMESTAMP,
 	UNIQUE(link)
 );
