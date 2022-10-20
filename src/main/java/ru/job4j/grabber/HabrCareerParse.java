@@ -9,9 +9,11 @@ import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class HabrCareerParse implements Parse {
     /**
