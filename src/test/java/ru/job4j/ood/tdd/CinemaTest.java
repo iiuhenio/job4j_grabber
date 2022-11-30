@@ -1,6 +1,5 @@
 package ru.job4j.ood.tdd;
 
-import junit.framework.TestCase;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -72,6 +71,8 @@ public class CinemaTest {
         Cinema cinema = new Cinema3D();
         Calendar date = Calendar.getInstance();
         Ticket soldTicket = cinema.buy(account, 1, 2, date);
-        assertThat(soldTicket).isNotEqualTo(new Ticket3D());
+        assertThrows(IllegalArgumentException.class, () -> {
+            cinema.buy(account, 1, 2, date);
+                });
     }
 }
