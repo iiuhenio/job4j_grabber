@@ -10,12 +10,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-
+@Disabled
 public class CinemaTest {
 
     /**
      * Покупаем и проверяем что с билетом все ок
      */
+    @Test
     public void whenBuyThenGetTicket() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
@@ -27,6 +28,7 @@ public class CinemaTest {
     /**
      * Добавляем сеанс и проверяем, что он есть среди других сеансов
      */
+    @Test
     public void whenAddSessionThenItExistsBetweenAllSessions() {
         Cinema cinema = new Cinema3D();
         Session session = new Session3D();
@@ -38,6 +40,7 @@ public class CinemaTest {
     /**
      * Проверяем, что нельзя купить билет на несуществующее место
      */
+    @Test
     public void whenBuyOnInvalidRowThenGetException() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
@@ -50,6 +53,7 @@ public class CinemaTest {
     /**
      * Проверяем, что нельзя купить билет на несуществующую дату
      */
+    @Test
     public void whenBuyTicketOnInvalidDate() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
@@ -62,6 +66,7 @@ public class CinemaTest {
     /**
      * Проверяем, что нельзя купить билет на место которое занято
      */
+    @Test
     public void whenButTicketButPlaceIsTaken() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
