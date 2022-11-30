@@ -66,7 +66,7 @@ public class CinemaTest {
      * Проверяем, что нельзя купить билет на место которое занято
      */
     @Test
-    public void whenButTicketButPlaceIsTaken() {
+    public void whenBuyButTicketButPlaceIsTaken() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
         Calendar date = Calendar.getInstance();
