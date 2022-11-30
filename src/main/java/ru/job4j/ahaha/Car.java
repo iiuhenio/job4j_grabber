@@ -46,11 +46,6 @@ public class Car implements Comparable<Car> {
                 + ", maxSpeed=" + maxSpeed + '}';
     }
 
-  // @Override
-  // public int compareTo(Car o) {
-  //     return this.getManufactureYear() - o.getManufactureYear();
-  // }
-
     @Override
     public int compareTo(Car car) {
         return this.maxSpeed - car.maxSpeed;
