@@ -42,38 +42,38 @@ public class GeneratorTest {
     }
 
     @Test
-    public void wrongKeys() {
+    public void whenThereAreWrongKeys() {
         Generator generator = new GeneratorObject();
         Map<String, String> map = new HashMap<>();
         map.put("admin", "Petr Arsentev");
         map.put("student", "you");
-        String rsl = "I am a Petr Arsentev, Who are you? ";
+        String str = "I am a ${name}, Who are ${subject}? ";
         assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(rsl, map);
+            generator.produce(str, map);
         });
     }
 
     @Test
-    public void wrongValues() {
+    public void whenThereAreWrongValues() {
         Generator generator = new GeneratorObject();
         Map<String, String> map = new HashMap<>();
         map.put("name", "Ivan");
         map.put("subject", "table");
-        String rsl = "I am a Petr Arsentev, Who are you? ";
+        String str = "I am a ${name}, Who are ${subject}? ";
         assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(rsl, map);
+            generator.produce(str, map);
         });
     }
 
-    public void tooManyPairs() {
+    public void whenThereAreTooManyPairs() {
         Generator generator = new GeneratorObject();
         Map<String, String> map = new HashMap<>();
         map.put("name", "Ivan");
         map.put("subject", "table");
         map.put("surname", "100");
-        String rsl = "I am a Petr Arsentev, Who are you? ";
+        String str = "I am a ${name}, Who are ${subject}? ";
         assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(rsl, map);
+            generator.produce(str, map);
         });
     }
 }
