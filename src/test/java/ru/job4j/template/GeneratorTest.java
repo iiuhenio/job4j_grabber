@@ -1,6 +1,7 @@
 package ru.job4j.template;
 
 import junit.framework.TestCase;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +11,6 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -48,9 +48,8 @@ public class GeneratorTest {
         map.put("admin", "Petr Arsentev");
         map.put("student", "you");
         String str = "I am a ${name}, Who are ${subject}? ";
-        assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(str, map);
-        });
+        assertThatThrownBy(() -> generator.produce(str, map)).
+                isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -60,9 +59,8 @@ public class GeneratorTest {
         map.put("name", "Ivan");
         map.put("subject", "table");
         String str = "I am a ${name}, Who are ${subject}? ";
-        assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(str, map);
-        });
+        assertThatThrownBy(() -> generator.produce(str, map)).
+                isInstanceOf(IllegalArgumentException.class);
     }
 
     public void whenThereAreTooManyPairs() {
@@ -72,8 +70,7 @@ public class GeneratorTest {
         map.put("subject", "table");
         map.put("surname", "100");
         String str = "I am a ${name}, Who are ${subject}? ";
-        assertThrows(IllegalArgumentException.class, () -> {
-            generator.produce(str, map);
-        });
+        assertThatThrownBy(() -> generator.produce(str, map)).
+                isInstanceOf(IllegalArgumentException.class);
     }
 }
