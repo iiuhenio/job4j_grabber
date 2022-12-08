@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 public class ArrayMax {
 
-    public static void main(int[] array) {
+    void max(int[] array) {
         Arrays.sort(array);
         int max = array[array.length - 1];
         System.out.println(max);
