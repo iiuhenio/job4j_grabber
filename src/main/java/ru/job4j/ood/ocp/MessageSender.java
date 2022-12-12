@@ -7,7 +7,9 @@ package ru.job4j.ood.ocp;
  * придется менять существующий код.
  */
 public class MessageSender {
-    //Шлем уведомление клиенту
+    /**
+     * шлем уведомление клиенту
+     */
     public void send(String msg, String type) {
         if (type.equals("SMS")) {
             sendSMS(msg);
