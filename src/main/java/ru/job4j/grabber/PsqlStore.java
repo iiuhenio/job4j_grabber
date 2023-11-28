@@ -30,17 +30,18 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        List<Post> posts = new ArrayList<>();
         try (PreparedStatement statement =
-                     cnn.prepareStatement("insert into post (name, text, link, created) values(?, ?, ?, ?)",
+                     cnn.prepareStatement(
+                             "insert into post (name, text, link, created) values(?, ?, ?, ?) on conflict (link) do nothing",
         Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, post.getTitle());
             statement.setString(2, post.getDescription());
             statement.setString(3, post.getLink());
-            statement.setString(4, String.valueOf(post.getCreated()));
+            statement.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
+
             statement.execute();
                 } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -48,21 +49,27 @@ public class PsqlStore implements Store, AutoCloseable {
     public List<Post> getAll() {
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement statement = cnn.prepareStatement("select * from post")) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    posts.add(new Post(
-                            resultSet.getInt("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("text"),
-                            resultSet.getString("link"),
-                            resultSet.getTimestamp("created").toLocalDateTime()
-                    ));
-                }
-            }
+            posts.add(getPost(statement));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return posts;
+    }
+
+    public Post getPost(PreparedStatement statement) {
+        Post post = null;
+        try (ResultSet resultSet = statement.executeQuery()) {
+            post = (new Post(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("text"),
+                    resultSet.getString("link"),
+                    resultSet.getTimestamp("created").toLocalDateTime()
+            ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return post;
     }
 
     @Override
@@ -70,19 +77,9 @@ public class PsqlStore implements Store, AutoCloseable {
         Post post = null;
         try (PreparedStatement statement = cnn.prepareStatement("select * from post where id = ?")) {
             statement.setInt(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    post = (new Post(
-                            resultSet.getInt("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("text"),
-                            resultSet.getString("link"),
-                            resultSet.getTimestamp("created").toLocalDateTime()
-                    ));
-                }
-            }
+            post = getPost(statement);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return post;
     }
@@ -96,12 +93,18 @@ public class PsqlStore implements Store, AutoCloseable {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
-        try (InputStream in = PsqlStore.class
-                .getClassLoader()
-                .getResourceAsStream("cfg.properties")) {
+        InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("cfg.properties");
+        try (in) {
             properties.load(in);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                }
+            }
         }
         PsqlStore psqlStore = new PsqlStore(properties);
         psqlStore.save(new Post(

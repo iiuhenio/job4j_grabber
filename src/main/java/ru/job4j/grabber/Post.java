@@ -98,5 +98,9 @@ public class Post {
                 + ", created=" + created
                 + '}';
     }
+
+    public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.now();
+    }
 }
 

@@ -12,9 +12,14 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 /**
  * 1. Конфигурирование
+ * Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+ * scheduler.start();
  * Начало работы происходит с создания класса управляющего всеми работами.
  * В объект Scheduler мы будем добавлять задачи, которые хотим выполнять периодически.
+ *
  * 2. Создание задачи.
+ * JobDetail job = newJob(Rabbit.class).build()
+ *
  * 3. Создание расписания
  * Конструкция ниже настраивает периодичность запуска.
  * В нашем случае, мы будем запускать задачу через 10 секунд и делать это бесконечно.
