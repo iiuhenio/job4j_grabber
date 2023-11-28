@@ -6,7 +6,9 @@ package ru.job4j.ood.isp;
 public interface Games {
 
     void menu(String menu);
+
     int showScore();
+
     void pause();
 }
 
@@ -27,7 +29,6 @@ class Chess implements Games {
     @Override
     public void pause() {
         throw new UnsupportedOperationException("Pause is not available");
-
     }
 }
 

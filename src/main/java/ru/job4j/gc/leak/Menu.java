@@ -20,7 +20,6 @@ public class Menu {
     public static final String TEXT_OF_POST = "Введите текст";
     public static final String EXIT = "Конец работы";
     public static final String ID_FOR_DELETE = "Введите id для удаления";
-
     public static final String MENU = """
                 Введите 1 для создание поста.
                 Введите 2, чтобы создать определенное количество постов.
@@ -28,7 +27,6 @@ public class Menu {
                 Введите 4, чтобы удалить все посты.
                 Введите любое другое число для выхода.
             """;
-
 
     public static void main(String[] args) {
         Random random = new Random();

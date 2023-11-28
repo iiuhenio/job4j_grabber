@@ -11,7 +11,10 @@ import java.util.List;
  * Метод findBy() позволяет извлечь объявление из базы по id
  */
 public interface Store {
+
     void save(Post post);
+
     List<Post> getAll();
+
     Post findBy(int id);
 }

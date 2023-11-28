@@ -48,5 +48,4 @@ public class Post {
         this.id = id;
     }
 
-
 }

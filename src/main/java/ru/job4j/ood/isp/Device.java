@@ -2,7 +2,9 @@ package ru.job4j.ood.isp;
 
 interface Device {
     void in(String data);
+
     void calculate();
+
     void output();
 }
 
@@ -24,7 +26,6 @@ class Computer implements Device {
     public void output() {
         System.out.println(buffer);
     }
-
 }
 
 class Server implements Device {

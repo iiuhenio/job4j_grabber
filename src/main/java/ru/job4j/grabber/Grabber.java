@@ -16,18 +16,14 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 public class Grabber implements Grab {
     private final Properties cfg = new Properties();
-
     public Store store() {
         return null;
     }
-
     public Scheduler scheduler() throws SchedulerException {
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.start();
         return scheduler;
     }
-
-
 
     @Override
     public void init(Parse parse, Store store, Scheduler scheduler) throws SchedulerException {

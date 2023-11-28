@@ -21,11 +21,8 @@ public abstract class AbstractCache<K, V> {
 
     public V get(K key) {
         return (V) cache.get(key);
-
-
     }
 
     protected abstract V load(K key);
-
 
 }

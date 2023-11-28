@@ -5,9 +5,13 @@ package ru.job4j.ood.isp;
  * Правильнее было бы в каждый интефейс поместить по одному методу и использовать те, которые нужны.
  */
 public interface Car {
+
     void drive();
+
     void fill();
+
     void load();
+
 }
 
 class Cars implements Car {
