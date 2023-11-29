@@ -98,31 +98,4 @@ public class PsqlStore implements Store, AutoCloseable {
             cnn.close();
         }
     }
-
-    public static void main(String[] args) {
-        Properties properties = new Properties();
-        InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("cfg.properties");
-        try (in) {
-            properties.load(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-        PsqlStore psqlStore = new PsqlStore(properties);
-        psqlStore.save(new Post(
-                "test_name1", "test_link1", "test_description1", LocalDateTime.now()));
-        psqlStore.save(new Post(
-                "test_name2", "test_link2", "test_description2", LocalDateTime.now()));
-        psqlStore.save(new Post(
-                "test_name3", "test_link3", "test_description3", LocalDateTime.now()));
-        System.out.println(psqlStore.getAll());
-        System.out.println();
-        System.out.println(psqlStore.findBy(3));
-    }
 }

@@ -9,5 +9,5 @@ import org.quartz.SchedulerException;
  * Абстрагируемся через интерфейс.
  */
 public interface Grab {
-    void init(Parse parse, Store store, Scheduler scheduler) throws SchedulerException;
+    void init() throws SchedulerException;
 }
