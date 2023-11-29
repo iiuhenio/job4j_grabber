@@ -49,27 +49,15 @@ public class PsqlStore implements Store, AutoCloseable {
     public List<Post> getAll() {
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement statement = cnn.prepareStatement("select * from post")) {
-            posts.add(getPost(statement));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    posts.add(getPost(resultSet));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return posts;
-    }
-
-    public Post getPost(PreparedStatement statement) {
-        Post post = null;
-        try (ResultSet resultSet = statement.executeQuery()) {
-            post = (new Post(
-                    resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("text"),
-                    resultSet.getString("link"),
-                    resultSet.getTimestamp("created").toLocalDateTime()
-            ));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return post;
     }
 
     @Override
@@ -77,7 +65,27 @@ public class PsqlStore implements Store, AutoCloseable {
         Post post = null;
         try (PreparedStatement statement = cnn.prepareStatement("select * from post where id = ?")) {
             statement.setInt(1, id);
-            post = getPost(statement);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    post = getPost(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return post;
+    }
+
+    public Post getPost(ResultSet resultSet) {
+        Post post = null;
+        try {
+            post = new Post(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("text"),
+                    resultSet.getString("link"),
+                    resultSet.getTimestamp("created").toLocalDateTime()
+            );
         } catch (SQLException e) {
             e.printStackTrace();
         }
