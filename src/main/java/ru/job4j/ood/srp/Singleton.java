@@ -9,8 +9,9 @@ public class Singleton {
     private static Singleton instance;
     private String[] orders = new String[1000];
     private int count = 0;
+
     private Singleton() {
-    };
+    }
 
     public static Singleton getInstance() {
         if (instance == null) {

@@ -45,9 +45,6 @@ public class AlertRabbit2 {
         );
         try {
             List<Long> store = new ArrayList<>();
-            /*
-             * В объект Scheduler мы будем добавлять задачи, которые хотим выполнять периодически.
-             */
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
@@ -82,6 +79,7 @@ public class AlertRabbit2 {
         public Rabbit() {
             System.out.println(hashCode());
         }
+
         /*
          * Чтобы получить объекты из context используется следующий вызов.
          */

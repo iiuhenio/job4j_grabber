@@ -34,6 +34,7 @@ public class HabrCareerParse implements Parse {
     public HabrCareerParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
     }
+
     /*
     Реализуем вывод описания вакансии
      */
@@ -47,7 +48,7 @@ public class HabrCareerParse implements Parse {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public List<Post> list(String link) {
         List<Post> list = new ArrayList<>();
