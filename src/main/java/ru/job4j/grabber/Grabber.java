@@ -45,6 +45,7 @@ public class Grabber implements Grab {
     }
 
     public static class GrabJob implements Job {
+
         @Override
         public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
@@ -63,6 +64,7 @@ public class Grabber implements Grab {
                 .getResourceAsStream("app.properties")) {
             cfg.load(in);
         }
+
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.start();
         var parse = new HabrCareerParse(new HabrCareerDateTimeParser());

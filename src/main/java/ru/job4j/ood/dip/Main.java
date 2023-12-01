@@ -23,6 +23,7 @@ class DataAccess {
 
 class Client {
     DataAccess da = new DataAccess();
+
     void doJob() {
         da.execute();
     }

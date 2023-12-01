@@ -31,7 +31,6 @@ class ConfirmationEmailSender {
     public void sendConfirmationEmail(Order order) {
         String name = order.getCustomerName();
         String email = order.getCustomerEmail();
-
         /* Шлем письмо клиенту */
     }
 }
@@ -40,6 +39,7 @@ class Order {
     boolean isValid() {
         return true;
     }
+
     String getCustomerName() {
         return "Name";
     }
@@ -50,7 +50,9 @@ class Order {
 }
 
 class MySqlConnection {
+
     private String address;
+
     public MySqlConnection(String address) {
         this.address = address;
     }

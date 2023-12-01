@@ -43,7 +43,6 @@ public class AlertRabbit2 {
                 config.getProperty("login"),
                 config.getProperty("password")
         );
-
         try {
             List<Long> store = new ArrayList<>();
             /*
@@ -51,15 +50,8 @@ public class AlertRabbit2 {
              */
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
-            /*
-             * При создании Job мы указываем параметры data. В них мы передаем ссылку на store.
-             * В нашем примере store это ArrayList.
-             */
             JobDataMap data = new JobDataMap();
             data.put("connection", connection);
-            /*
-             *  создание задачи
-             */
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
@@ -77,10 +69,6 @@ public class AlertRabbit2 {
                     .withSchedule(times)
                     .build();
             scheduler.scheduleJob(job, trigger);
-            /*
-             * После выполнения работы в списке будут две даты.
-             * Объект store является общим для каждой работы.
-             */
             Thread.sleep(10000);
             scheduler.shutdown();
             System.out.println(store);
