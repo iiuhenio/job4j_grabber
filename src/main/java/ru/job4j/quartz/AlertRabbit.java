@@ -76,9 +76,11 @@ public class AlertRabbit {
      * В нашем случае - это вывод на консоль текста.
      */
     public static class Rabbit implements Job {
+
         public Rabbit() {
             System.out.println(hashCode());
         }
+
         @Override
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
@@ -113,6 +115,4 @@ public class AlertRabbit {
         }
         return config;
     }
-
-
 }
