@@ -2,38 +2,15 @@ package ru.job4j.quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
-/**
- * 1. Конфигурирование
- * Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
- * scheduler.start();
- * Начало работы происходит с создания класса управляющего всеми работами.
- * В объект Scheduler мы будем добавлять задачи, которые хотим выполнять периодически.
- *
- * 2. Создание задачи.
- * JobDetail job = newJob(Rabbit.class).build()
- *
- * 3. Создание расписания
- * Конструкция ниже настраивает периодичность запуска.
- * В нашем случае, мы будем запускать задачу через 10 секунд и делать это бесконечно.
- * 4. Задача выполняется через триггер
- * Здесь можно указать, когда начать запуск.
- * Мы хотим сделать это сразу
- * 5. Загрузка задачи и триггера в планировщик
- */
 public class AlertRabbit {
 
     public static Connection initConnection() throws Exception {
@@ -84,16 +61,14 @@ public class AlertRabbit {
         @Override
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
-            List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
-            Long l = System.currentTimeMillis();
-            store.add(l);
+            //List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
+            long l = System.currentTimeMillis();
             String sql = "INSERT INTO rabbit (created_date) VALUES (?)";
+            Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
             try {
-                PreparedStatement preparedStatement = initConnection().prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setLong(1, l);
                 preparedStatement.execute();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
