@@ -47,7 +47,8 @@ JDK 16, Maven 3.8, PostgreSQL 14.
 2. Для просмотра результата работы парсера необходима перейти на страницу:
    > localhost:9000
 
-![localhost9000.jpg](img%2Flocalhost9000.jpg) <br>
+![localhost9000](https://github.com/iiuhenio/job4j_grabber/assets/63558835/141a95c8-f693-4b81-84c0-37bc78492020)<br>
+
 
 Рисунок 1. Отображение страницы с результатом.
 
