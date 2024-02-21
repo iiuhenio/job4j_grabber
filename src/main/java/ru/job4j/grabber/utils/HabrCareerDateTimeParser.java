@@ -1,10 +1,11 @@
 package ru.job4j.grabber.utils;
 
-import ru.job4j.grabber.HabrCareerParse;
-
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
+/**
+ * Реализуем метод, преобразующий дату из формата career.habr.com, к виду "yyyy-mm-ddТhh:mm:ss"
+ */
 public class HabrCareerDateTimeParser implements DateTimeParser {
 
     @Override

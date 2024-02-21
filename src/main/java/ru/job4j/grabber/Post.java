@@ -1,12 +1,12 @@
 package ru.job4j.grabber;
 
-import ru.job4j.grabber.utils.DateTimeParser;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Модель данных Post
+ * содержит всю необходимую информацию о вакансии
+ */
 public class Post {
 
     private int id;
@@ -92,8 +92,8 @@ public class Post {
         return "Post{"
                 + "id=" + id
                 + ", title='" + title + '\''
-                + ", link='" + link + '\''
-                + ", description='" + description
+                + ", description='" + description + '\''
+                + ", link='" + link
                 + '\''
                 + ", created=" + created
                 + '}';

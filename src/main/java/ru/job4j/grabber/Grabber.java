@@ -7,7 +7,7 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,6 +15,9 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+/**
+ * Данный класс объединяет все другие классы и служит для запуска приложения.
+ */
 public class Grabber implements Grab {
     private Parse parse;
     private Store store;
@@ -29,7 +32,6 @@ public class Grabber implements Grab {
     }
 
     public Grabber() {
-
     }
 
     @Override
@@ -51,7 +53,6 @@ public class Grabber implements Grab {
     }
 
     public static class GrabJob implements Job {
-
         @Override
         public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
@@ -64,6 +65,19 @@ public class Grabber implements Grab {
         }
     }
 
+    public static Properties getProperties() {
+        Properties config = new Properties();
+        try (InputStream in = Grabber.class.getClassLoader().getResourceAsStream("app.properties")) {
+            config.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return config;
+    }
+
+    /**
+     * Данный метод выводит список спарсенных вакансий в браузере
+     */
     public void web(Store store) {
         new Thread(() -> {
             try (ServerSocket server = new ServerSocket(Integer.parseInt(getProperties().getProperty("port")))) {
@@ -72,7 +86,7 @@ public class Grabber implements Grab {
                     try (OutputStream out = socket.getOutputStream()) {
                         out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
                         for (Post post : store.getAll()) {
-                            out.write(post.toString().getBytes());
+                            out.write(post.toString().getBytes(Charset.forName("Windows-1251")));
                             out.write(System.lineSeparator().getBytes());
                         }
                     } catch (IOException io) {
@@ -85,33 +99,16 @@ public class Grabber implements Grab {
         }).start();
     }
 
-        public static Properties getProperties() {
-            Properties config = new Properties();
-            try (InputStream in = Grabber.class.getClassLoader().getResourceAsStream("app.properties")) {
-                config.load(in);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return config;
-        }
-
-
     public static void main(String[] args) throws Exception {
         Grabber grab = new Grabber();
         getProperties();
 
-        //Scheduler scheduler = grab.scheduler();
+        var parse = new HabrCareerParse(new HabrCareerDateTimeParser());
+        var store = new PsqlStore(getProperties());
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.start();
-
-        //Store store = grab.store();
-        var store = new PsqlStore(getProperties());
-
-        var parse = new HabrCareerParse(new HabrCareerDateTimeParser());
-
         var time = Integer.parseInt(getProperties().getProperty("time"));
 
-        //grab.init(new HabrCareerParse(new HabrCareerDateTimeParser()), store, scheduler);
         new Grabber(parse, store, scheduler, time).init();
         grab.web(store);
     }
